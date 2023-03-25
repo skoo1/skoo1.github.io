@@ -25,7 +25,7 @@ const material_nut = new THREE.MeshStandardMaterial({
 let model_nut
 const loader = new GLTFLoader()
 loader.load(
-    '../models/butterfly_nut.gltf',
+    'https://github.com/skoo1/skoo1.github.io/blob/b8f591110d22374eec8c0c4d1f5aaec64659f3f8/three_js_01/models/butterfly_nut.gltf',
     (gltfScene) => {
         model_nut = gltfScene
         scene.add(gltfScene.scene)
