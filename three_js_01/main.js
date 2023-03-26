@@ -43,19 +43,22 @@ NutIB.set(1, 0, 0,
           0, 2, 0,
           0, 0, 3)
 
-const Nut_q0_world = new THREE.Quaternion()
-Nut_q0_world.set(0.00999983333, 0, 0, 0.99995000041)
-const Nut_w0_body = new THREE.Vector3()
-Nut_w0_body.set(0, 1, 0)
-const NutTorque_body = new THREE.Vector3()
-NutTorque_body.set(0, 0, 0)
+const q0 = new THREE.Quaternion()
+q0.set(0.00499998, 0, 0, 0.9999875)
+const w0 = new THREE.Vector3()
+w0.set(0, 1, 0)
+const T0 = new THREE.Vector3()
+T0.set(0, 0, 0)
 
+//Initial Conditions
+const Nut_Torque_body = new THREE.Vector3()
+Nut_Torque_body.copy(T0)
 const Nut_q_current_world = new THREE.Quaternion()
-Nut_q_current_world.copy(Nut_q0_world)
+Nut_q_current_world.copy(q0)
 const Nut_q_current_body = new THREE.Quaternion()
 Nut_q_current_body.set(0, 0, 0, 1)
 const Nut_w_current_body = new THREE.Vector3()
-Nut_w_current_body.copy(Nut_w0_body)
+Nut_w_current_body.copy(w0)
 const Nut_w_current_world = new THREE.Vector3()
 Nut_w_current_world.copy(Nut_w_current_body)
 Nut_w_current_world.applyQuaternion(Nut_q_current_world)
@@ -71,7 +74,7 @@ function update_Nut_pose() {
 
     // calculate w_dot_body = IBInv * (Torque - w_croxx_IB_mult_w)
     const Nut_Torque_sub_wIw = new THREE.Vector3()
-    Nut_Torque_sub_wIw.copy(NutTorque_body)
+    Nut_Torque_sub_wIw.copy(Nut_Torque_body)
     Nut_Torque_sub_wIw.sub(Nut_w_x_Iw_current_body)
     const NutIBInv = new THREE.Matrix3()
     NutIBInv.copy(NutIB)
@@ -133,6 +136,9 @@ function update_Nut_pose() {
     Nut_w_current_body.copy(Nut_w_current_world)
     Nut_w_current_body.applyQuaternion(Nut_q_current_world_inv)
 }
+
+update_Nut_pose()
+console.log(Nut_q_current_world)
 
 //Sizes
 const sizes = {
