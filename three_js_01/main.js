@@ -82,6 +82,8 @@ function update_Nut_pose() {
     const Nut_w_dot_current_body = new THREE.Vector3()
     Nut_w_dot_current_body.copy(Nut_Torque_sub_wIw)
     Nut_w_dot_current_body.applyMatrix3(NutIBInv)
+    console.log("Nut_w_dot_current_body")
+    console.log(Nut_w_dot_current_body)
 
     var qx, qy, qz, qw, wx, wy, wz
     qx = Nut_q_current_body.x
@@ -104,11 +106,15 @@ function update_Nut_pose() {
     Nut_q_next_body.z = Nut_q_current_body.z + htime*Nut_q_dot.z
     Nut_q_next_body.w = Nut_q_current_body.w + htime*Nut_q_dot.w
     Nut_q_next_body.normalize()
+    console.log("Nut_q_next_body")
+    console.log(Nut_q_next_body)
 
     const Nut_w_next_body = new THREE.Vector3()
     Nut_w_next_body.x = Nut_w_current_body.x + htime*Nut_w_dot_current_body.x
     Nut_w_next_body.y = Nut_w_current_body.y + htime*Nut_w_dot_current_body.y
     Nut_w_next_body.z = Nut_w_current_body.z + htime*Nut_w_dot_current_body.z
+    console.log("Nut_w_next_body")
+    console.log(Nut_w_next_body)
 
     const Nut_q_current_body_inv = new THREE.Quaternion()
     Nut_q_current_body_inv.copy(Nut_q_current_body)
@@ -121,10 +127,14 @@ function update_Nut_pose() {
     const Nut_q_next_world = new THREE.Quaternion()
     Nut_q_next_world.copy(Nut_q_diff_body)
     Nut_q_next_world.multiply(Nut_q_current_world)
+    console.log("Nut_q_next_world")
+    console.log(Nut_q_next_world)
 
     const Nut_w_next_world = new THREE.Vector3()
     Nut_w_next_world.copy(Nut_w_next_body)
     Nut_w_next_world.applyQuaternion(Nut_q_current_world)
+    console.log("Nut_w_next_world")
+    console.log(Nut_w_next_world)
 
     //Step forward ==========================
     Nut_q_current_world.copy(Nut_q_next_world)
@@ -135,10 +145,12 @@ function update_Nut_pose() {
     Nut_w_current_world.copy(Nut_w_next_world)
     Nut_w_current_body.copy(Nut_w_current_world)
     Nut_w_current_body.applyQuaternion(Nut_q_current_world_inv)
+    console.log("Nut_w_current_body")
+    console.log(Nut_w_current_body)
 }
 
-update_Nut_pose()
-console.log(Nut_q_current_world)
+//Debugging
+// update_Nut_pose()
 
 //Sizes
 const sizes = {
