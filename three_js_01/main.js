@@ -39,14 +39,15 @@ loader.load(
 //Dynamics Calculations
 const htime = 0.001
 const NutIB = new THREE.Matrix3()
-NutIB.set(1, 0, 0,
-          0, 2, 0,
-          0, 0, 3)
+NutIB.set(1.9, 0, 0,
+          0, 2.0, 0,
+          0, 0, 2.1)
 
 const q0 = new THREE.Quaternion()
-q0.set(0.00499998, 0, 0, 0.9999875)
+// q0.set(Math.sin((Math.PI/100)/2)*0, Math.sin((Math.PI/100)/2)*0, Math.sin((Math.PI/100)/2)*1, Math.cos((Math.PI/100)/2))
+q0.set(Math.sin(0/2)*0, Math.sin(0/2)*0, Math.sin(0/2)*1, Math.cos(0/2))
 const w0 = new THREE.Vector3()
-w0.set(0, 1, 0)
+w0.set(0, 1, 0.01)
 const T0 = new THREE.Vector3()
 T0.set(0, 0, 0)
 
@@ -57,11 +58,17 @@ const Nut_q_current_world = new THREE.Quaternion()
 Nut_q_current_world.copy(q0)
 const Nut_q_current_body = new THREE.Quaternion()
 Nut_q_current_body.set(0, 0, 0, 1)
+
 const Nut_w_current_body = new THREE.Vector3()
 Nut_w_current_body.copy(w0)
 const Nut_w_current_world = new THREE.Vector3()
 Nut_w_current_world.copy(Nut_w_current_body)
 Nut_w_current_world.applyQuaternion(Nut_q_current_world)
+
+console.log("Nut_w_current_body")
+console.log(Nut_w_current_body)
+console.log("Nut_w_current_world")
+console.log(Nut_w_current_world)
 
 function update_Nut_pose() {
     // calculate w_croxx_IB_mult_w
@@ -71,6 +78,8 @@ function update_Nut_pose() {
     const Nut_w_x_Iw_current_body = new THREE.Vector3()
     Nut_w_x_Iw_current_body.copy(Nut_w_current_body)
     Nut_w_x_Iw_current_body.cross(Nut_Iw_current_body)
+    console.log("Nut_w_x_Iw_current_body")
+    console.log(Nut_w_x_Iw_current_body)
 
     // calculate w_dot_body = IBInv * (Torque - w_croxx_IB_mult_w)
     const Nut_Torque_sub_wIw = new THREE.Vector3()
@@ -119,14 +128,18 @@ function update_Nut_pose() {
     const Nut_q_current_body_inv = new THREE.Quaternion()
     Nut_q_current_body_inv.copy(Nut_q_current_body)
     Nut_q_current_body_inv.invert()
+    console.log("Nut_q_current_body_inv")
+    console.log(Nut_q_current_body_inv)
 
     const Nut_q_diff_body = new THREE.Quaternion()
     Nut_q_diff_body.copy(Nut_q_next_body)
     Nut_q_diff_body.multiply(Nut_q_current_body_inv)
+    console.log("Nut_q_diff_body")
+    console.log(Nut_q_diff_body)
 
     const Nut_q_next_world = new THREE.Quaternion()
-    Nut_q_next_world.copy(Nut_q_diff_body)
-    Nut_q_next_world.multiply(Nut_q_current_world)
+    Nut_q_next_world.copy(Nut_q_current_world)
+    Nut_q_next_world.multiply(Nut_q_diff_body)
     console.log("Nut_q_next_world")
     console.log(Nut_q_next_world)
 
@@ -219,7 +232,7 @@ function loop() {
 
         // draw animating objects here...
         if (model_nut) {
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 100; i++) {
                 update_Nut_pose()
             }
             model_nut.scene.setRotationFromQuaternion(Nut_q_current_world)
