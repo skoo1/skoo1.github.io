@@ -1,9 +1,13 @@
 import * as THREE from 'three'
 import { OrbitControls } from "https://unpkg.com/three@0.150.1/examples/jsm/controls/OrbitControls"
 import { GLTFLoader } from 'https://unpkg.com/three@0.150.1/examples/jsm/loaders/GLTFLoader'
+import { GUI } from 'https://unpkg.com/three@0.150.1/examples/jsm/libs/lil-gui.module.min.js';
 
 //Scene
 const scene = new THREE.Scene()
+
+//Gui
+const gui = new GUI( { width: 315 } );
 
 //Axes Show
 const axesWorld = new THREE.AxesHelper(20)
@@ -65,10 +69,18 @@ const Nut_w_current_world = new THREE.Vector3()
 Nut_w_current_world.copy(Nut_w_current_body)
 Nut_w_current_world.applyQuaternion(Nut_q_current_world)
 
-console.log("Nut_w_current_body")
-console.log(Nut_w_current_body)
-console.log("Nut_w_current_world")
-console.log(Nut_w_current_world)
+// console.log("Nut_w_current_body")
+// console.log(Nut_w_current_body)
+// console.log("Nut_w_current_world")
+// console.log(Nut_w_current_world)
+
+var gui_qw_current_world = gui.add(Nut_q_current_world, "w", -1, 1, 0.001).name("qw, world frame");
+var gui_qx_current_world = gui.add(Nut_q_current_world, "x", -1, 1, 0.001).name("qx, world frame");
+var gui_qy_current_world = gui.add(Nut_q_current_world, "y", -1, 1, 0.001).name("qy, world frame");
+var gui_qz_current_world = gui.add(Nut_q_current_world, "z", -1, 1, 0.001).name("qz, world frame");
+var gui_wx_current_world = gui.add(Nut_w_current_world, "x", -1, 1, 0.001).name("wx, world frame");
+var gui_wy_current_world = gui.add(Nut_w_current_world, "y", -1, 1, 0.001).name("wy, world frame");
+var gui_wz_current_world = gui.add(Nut_w_current_world, "z", -1, 1, 0.001).name("wz, world frame");
 
 function update_Nut_pose() {
     // calculate w_croxx_IB_mult_w
@@ -78,8 +90,8 @@ function update_Nut_pose() {
     const Nut_w_x_Iw_current_body = new THREE.Vector3()
     Nut_w_x_Iw_current_body.copy(Nut_w_current_body)
     Nut_w_x_Iw_current_body.cross(Nut_Iw_current_body)
-    console.log("Nut_w_x_Iw_current_body")
-    console.log(Nut_w_x_Iw_current_body)
+    // console.log("Nut_w_x_Iw_current_body")
+    // console.log(Nut_w_x_Iw_current_body)
 
     // calculate w_dot_body = IBInv * (Torque - w_croxx_IB_mult_w)
     const Nut_Torque_sub_wIw = new THREE.Vector3()
@@ -91,8 +103,8 @@ function update_Nut_pose() {
     const Nut_w_dot_current_body = new THREE.Vector3()
     Nut_w_dot_current_body.copy(Nut_Torque_sub_wIw)
     Nut_w_dot_current_body.applyMatrix3(NutIBInv)
-    console.log("Nut_w_dot_current_body")
-    console.log(Nut_w_dot_current_body)
+    // console.log("Nut_w_dot_current_body")
+    // console.log(Nut_w_dot_current_body)
 
     var qx, qy, qz, qw, wx, wy, wz
     qx = Nut_q_current_body.x
@@ -115,39 +127,39 @@ function update_Nut_pose() {
     Nut_q_next_body.z = Nut_q_current_body.z + htime*Nut_q_dot.z
     Nut_q_next_body.w = Nut_q_current_body.w + htime*Nut_q_dot.w
     Nut_q_next_body.normalize()
-    console.log("Nut_q_next_body")
-    console.log(Nut_q_next_body)
+    // console.log("Nut_q_next_body")
+    // console.log(Nut_q_next_body)
 
     const Nut_w_next_body = new THREE.Vector3()
     Nut_w_next_body.x = Nut_w_current_body.x + htime*Nut_w_dot_current_body.x
     Nut_w_next_body.y = Nut_w_current_body.y + htime*Nut_w_dot_current_body.y
     Nut_w_next_body.z = Nut_w_current_body.z + htime*Nut_w_dot_current_body.z
-    console.log("Nut_w_next_body")
-    console.log(Nut_w_next_body)
+    // console.log("Nut_w_next_body")
+    // console.log(Nut_w_next_body)
 
     const Nut_q_current_body_inv = new THREE.Quaternion()
     Nut_q_current_body_inv.copy(Nut_q_current_body)
     Nut_q_current_body_inv.invert()
-    console.log("Nut_q_current_body_inv")
-    console.log(Nut_q_current_body_inv)
+    // console.log("Nut_q_current_body_inv")
+    // console.log(Nut_q_current_body_inv)
 
     const Nut_q_diff_body = new THREE.Quaternion()
     Nut_q_diff_body.copy(Nut_q_next_body)
     Nut_q_diff_body.multiply(Nut_q_current_body_inv)
-    console.log("Nut_q_diff_body")
-    console.log(Nut_q_diff_body)
+    // console.log("Nut_q_diff_body")
+    // console.log(Nut_q_diff_body)
 
     const Nut_q_next_world = new THREE.Quaternion()
     Nut_q_next_world.copy(Nut_q_current_world)
     Nut_q_next_world.multiply(Nut_q_diff_body)
-    console.log("Nut_q_next_world")
-    console.log(Nut_q_next_world)
+    // console.log("Nut_q_next_world")
+    // console.log(Nut_q_next_world)
 
     const Nut_w_next_world = new THREE.Vector3()
     Nut_w_next_world.copy(Nut_w_next_body)
     Nut_w_next_world.applyQuaternion(Nut_q_current_world)
-    console.log("Nut_w_next_world")
-    console.log(Nut_w_next_world)
+    // console.log("Nut_w_next_world")
+    // console.log(Nut_w_next_world)
 
     //Step forward ==========================
     Nut_q_current_world.copy(Nut_q_next_world)
@@ -158,8 +170,8 @@ function update_Nut_pose() {
     Nut_w_current_world.copy(Nut_w_next_world)
     Nut_w_current_body.copy(Nut_w_current_world)
     Nut_w_current_body.applyQuaternion(Nut_q_current_world_inv)
-    console.log("Nut_w_current_body")
-    console.log(Nut_w_current_body)
+    // console.log("Nut_w_current_body")
+    // console.log(Nut_w_current_body)
 }
 
 //Debugging
@@ -190,9 +202,9 @@ const renderer = new THREE.WebGLRenderer({canvas})
 renderer.setSize(sizes.width, sizes.height)
 renderer.render(scene, camera)
 
-//Control
-const control = new OrbitControls(camera, canvas)
-control.enableDamping = true
+//Orbit Control
+const orbitControl = new OrbitControls(camera, canvas)
+orbitControl.enableDamping = true
 
 //Resize
 window.addEventListener('resize', () => {
@@ -238,7 +250,14 @@ function loop() {
             model_nut.scene.setRotationFromQuaternion(Nut_q_current_world)
             axesBody.setRotationFromQuaternion(Nut_q_current_world)
         }
-        control.update()
+        orbitControl.update()
+        gui_qw_current_world.updateDisplay()
+        gui_qx_current_world.updateDisplay()
+        gui_qy_current_world.updateDisplay()
+        gui_qz_current_world.updateDisplay()
+        gui_wx_current_world.updateDisplay()
+        gui_wy_current_world.updateDisplay()
+        gui_wz_current_world.updateDisplay()
         renderer.render(scene, camera)
     
         // below code is used for testing, whether the frame is animating at the specified fps
