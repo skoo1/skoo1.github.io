@@ -1,16 +1,16 @@
 import * as THREE from 'three'
 import { OrbitControls } from "https://unpkg.com/three@0.150.1/examples/jsm/controls/OrbitControls"
-import { STLLoader } from 'https://unpkg.com/three@0.150.1/examples/jsm/loaders/STLLoader'
+import { GLTFLoader } from 'https://unpkg.com/three@0.150.1/examples/jsm/loaders/GLTFLoader'
 
 //Scene
 const scene = new THREE.Scene()
 
 //Axes Show
-const axesWorld = new THREE.AxesHelper(20)
+const axesWorld = new THREE.AxesHelper(25)
 scene.add(axesWorld)
 
 //Axes Show
-const axesBody = new THREE.AxesHelper(20)
+const axesBody = new THREE.AxesHelper(25)
 scene.add(axesBody)
 
 //Mesh Ball
@@ -21,43 +21,48 @@ const material_ball = new THREE.MeshStandardMaterial({
 const mesh_ball = new THREE.Mesh(geometry_ball, material_ball)
 scene.add(mesh_ball)
 
-//Mesh Spinning Top
-const material_top = new THREE.MeshStandardMaterial({
+//Mesh Butterfly Nut
+const material_nut = new THREE.MeshStandardMaterial({
     color: 0xffffff,
 })
 
-let model_top
-const loader = new STLLoader()
+let model_nut
+const loader = new GLTFLoader()
 loader.load(
-    'spinningtop.stl',
-    (geometry) => {
-        model_top = new THREE.Mesh(geometry, material_top);
-        scene.add(model_top)
+    'spinningtop.gltf',
+    (gltfScene) => {
+        model_nut = gltfScene
+        scene.add(gltfScene.scene)
     }
 )
 
 //Dynamics Calculations
 const htime = 0.001
 const NutIB = new THREE.Matrix3()
-NutIB.set(1.9, 0, 0,
-          0, 2.0, 0,
-          0, 0, 2.1)
+NutIB.set(0.030, 0, 0,
+          0, 0.025, 0,
+          0, 0, 0.030)
 
 const q0 = new THREE.Quaternion()
-// q0.set(Math.sin((Math.PI/100)/2)*0, Math.sin((Math.PI/100)/2)*0, Math.sin((Math.PI/100)/2)*1, Math.cos((Math.PI/100)/2))
-q0.set(Math.sin(0/2)*0, Math.sin(0/2)*0, Math.sin(0/2)*1, Math.cos(0/2))
+q0.set(Math.sin(0.17/2)*1.0, Math.sin(0.17/2)*0.0, Math.sin(0.17/2)*0.0, Math.cos(0.17/2))
 const w0 = new THREE.Vector3()
-w0.set(0, 1, 0.01)
-const T0 = new THREE.Vector3()
-T0.set(0, 0, 0)
+w0.set(0, 30, 0)
+// const T0 = new THREE.Vector3()
+// T0.set(0, 0, 0)
 
 //Initial Conditions
-const Nut_Torque_body = new THREE.Vector3()
-Nut_Torque_body.copy(T0)
 const Nut_q_current_world = new THREE.Quaternion()
 Nut_q_current_world.copy(q0)
 const Nut_q_current_body = new THREE.Quaternion()
 Nut_q_current_body.set(0, 0, 0, 1)
+
+// Nut_Torque_body.copy(T0)
+let x = Nut_q_current_world.x;
+let y = Nut_q_current_world.y;
+let z = Nut_q_current_world.z;
+let w = Nut_q_current_world.w;
+const Nut_Torque_body = new THREE.Vector3()
+Nut_Torque_body.set(2*y*z+2*x*w, 0, 2*z*w-2*x*y);
 
 const Nut_w_current_body = new THREE.Vector3()
 Nut_w_current_body.copy(w0)
@@ -80,6 +85,12 @@ function update_Nut_pose() {
     Nut_w_x_Iw_current_body.cross(Nut_Iw_current_body)
     console.log("Nut_w_x_Iw_current_body")
     console.log(Nut_w_x_Iw_current_body)
+
+    let x = Nut_q_current_world.x;
+    let y = Nut_q_current_world.y;
+    let z = Nut_q_current_world.z;
+    let w = Nut_q_current_world.w;
+    Nut_Torque_body.set(2*y*z+2*x*w, 0, 2*z*w-2*x*y);
 
     // calculate w_dot_body = IBInv * (Torque - w_croxx_IB_mult_w)
     const Nut_Torque_sub_wIw = new THREE.Vector3()
@@ -181,7 +192,7 @@ scene.add(light2)
 
 //Camera
 const camera = new THREE.PerspectiveCamera(45, sizes.width /sizes.height, 0.1, 1000.0)
-camera.position.z = 60
+camera.position.z = 80
 scene.add(camera)
 
 //Renderer
@@ -231,11 +242,11 @@ function loop() {
         then = now - (elapsed % fpsInterval);
 
         // draw animating objects here...
-        if (model_top) {
+        if (model_nut) {
             for (let i = 0; i < 100; i++) {
                 update_Nut_pose()
             }
-            model_top.scene.setRotationFromQuaternion(Nut_q_current_world)
+            model_nut.scene.setRotationFromQuaternion(Nut_q_current_world)
             axesBody.setRotationFromQuaternion(Nut_q_current_world)
         }
         control.update()
