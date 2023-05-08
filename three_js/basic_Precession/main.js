@@ -52,7 +52,10 @@ w0.set(0, 30, 0)
 
 //Initial Conditions
 const Nut_q_current_world = new THREE.Quaternion()
+const Nut_q_current_world_inv = new THREE.Quaternion()
 Nut_q_current_world.copy(q0)
+Nut_q_current_world_inv.copy(Nut_q_current_world)
+Nut_q_current_world_inv.invert()
 const Nut_q_current_body = new THREE.Quaternion()
 Nut_q_current_body.set(0, 0, 0, 1)
 
@@ -62,7 +65,10 @@ let y = Nut_q_current_world.y;
 let z = Nut_q_current_world.z;
 let w = Nut_q_current_world.w;
 const Nut_Torque_body = new THREE.Vector3()
-Nut_Torque_body.set(2*y*z+2*x*w, 0, 2*z*w-2*x*y);
+const Nut_Torque_world = new THREE.Vector3()
+Nut_Torque_world.set(2*y*z+2*x*w, 0, 2*z*w-2*x*y);
+Nut_Torque_body.copy(Nut_Torque_world)
+Nut_Torque_body.applyQuaternion(Nut_q_current_world_inv)
 
 const Nut_w_current_body = new THREE.Vector3()
 Nut_w_current_body.copy(w0)
@@ -90,8 +96,11 @@ function update_Nut_pose() {
     let y = Nut_q_current_world.y;
     let z = Nut_q_current_world.z;
     let w = Nut_q_current_world.w;
-    Nut_Torque_body.set(2*y*z+2*x*w, 0, 2*z*w-2*x*y);
-
+    Nut_Torque_world.set(2*y*z+2*x*w, 0, 2*z*w-2*x*y);
+    Nut_Torque_body.copy(Nut_Torque_world)
+    Nut_Torque_body.applyQuaternion(Nut_q_current_world_inv)
+    
+    
     // calculate w_dot_body = IBInv * (Torque - w_croxx_IB_mult_w)
     const Nut_Torque_sub_wIw = new THREE.Vector3()
     Nut_Torque_sub_wIw.copy(Nut_Torque_body)
@@ -162,7 +171,6 @@ function update_Nut_pose() {
 
     //Step forward ==========================
     Nut_q_current_world.copy(Nut_q_next_world)
-    const Nut_q_current_world_inv = new THREE.Quaternion()
     Nut_q_current_world_inv.copy(Nut_q_current_world)
     Nut_q_current_world_inv.invert()
     Nut_q_current_body.set(0, 0, 0, 1)
