@@ -94,14 +94,21 @@ function update_Nut_pose() {
     console.log("Nut_w_dot_current_body")
     console.log(Nut_w_dot_current_body)
 
+    const Nut_w_next_body = new THREE.Vector3()
+    Nut_w_next_body.x = Nut_w_current_body.x + htime*Nut_w_dot_current_body.x
+    Nut_w_next_body.y = Nut_w_current_body.y + htime*Nut_w_dot_current_body.y
+    Nut_w_next_body.z = Nut_w_current_body.z + htime*Nut_w_dot_current_body.z
+    console.log("Nut_w_next_body")
+    console.log(Nut_w_next_body)
+    
     var qx, qy, qz, qw, wx, wy, wz
     qx = Nut_q_current_body.x
     qy = Nut_q_current_body.y
     qz = Nut_q_current_body.z
     qw = Nut_q_current_body.w
-    wx = Nut_w_current_body.x
-    wy = Nut_w_current_body.y
-    wz = Nut_w_current_body.z
+    wx = Nut_w_next_body.x
+    wy = Nut_w_next_body.y
+    wz = Nut_w_next_body.z
 
     const Nut_q_dot = new THREE.Quaternion()
     Nut_q_dot.x = 0.5*(wx*qw + wz*qy - wy*qz)
@@ -117,13 +124,6 @@ function update_Nut_pose() {
     Nut_q_next_body.normalize()
     console.log("Nut_q_next_body")
     console.log(Nut_q_next_body)
-
-    const Nut_w_next_body = new THREE.Vector3()
-    Nut_w_next_body.x = Nut_w_current_body.x + htime*Nut_w_dot_current_body.x
-    Nut_w_next_body.y = Nut_w_current_body.y + htime*Nut_w_dot_current_body.y
-    Nut_w_next_body.z = Nut_w_current_body.z + htime*Nut_w_dot_current_body.z
-    console.log("Nut_w_next_body")
-    console.log(Nut_w_next_body)
 
     const Nut_q_current_body_inv = new THREE.Quaternion()
     Nut_q_current_body_inv.copy(Nut_q_current_body)
@@ -143,19 +143,24 @@ function update_Nut_pose() {
     console.log("Nut_q_next_world")
     console.log(Nut_q_next_world)
 
-    const Nut_w_next_world = new THREE.Vector3()
-    Nut_w_next_world.copy(Nut_w_next_body)
-    Nut_w_next_world.applyQuaternion(Nut_q_current_world)
-    console.log("Nut_w_next_world")
-    console.log(Nut_w_next_world)
-
     //Step forward ==========================
     Nut_q_current_world.copy(Nut_q_next_world)
+    Nut_q_current_body.set(0, 0, 0, 1)
+
+
+    // const Nut_w_next_world = new THREE.Vector3()
+    // Nut_w_next_world.copy(Nut_w_next_body)
+    // Nut_w_next_world.applyQuaternion(Nut_q_current_world)
+    // console.log("Nut_w_next_world")
+    // console.log(Nut_w_next_world)
+
+    // Nut_w_current_world.copy(Nut_w_next_world)
+    Nut_w_current_world.copy(Nut_w_next_body)
+    Nut_w_current_world.applyQuaternion(Nut_q_next_world)
+
     const Nut_q_current_world_inv = new THREE.Quaternion()
     Nut_q_current_world_inv.copy(Nut_q_current_world)
     Nut_q_current_world_inv.invert()
-    Nut_q_current_body.set(0, 0, 0, 1)
-    Nut_w_current_world.copy(Nut_w_next_world)
     Nut_w_current_body.copy(Nut_w_current_world)
     Nut_w_current_body.applyQuaternion(Nut_q_current_world_inv)
     console.log("Nut_w_current_body")
