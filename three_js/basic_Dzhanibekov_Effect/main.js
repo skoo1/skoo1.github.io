@@ -39,9 +39,9 @@ loader.load(
 //Dynamics Calculations
 const htime = 0.001
 const NutIB = new THREE.Matrix3()
-NutIB.set(1.9, 0, 0,
+NutIB.set(1.0, 0, 0,
           0, 2.0, 0,
-          0, 0, 2.1)
+          0, 0, 2.5)
 
 const q0 = new THREE.Quaternion()
 // q0.set(Math.sin((Math.PI/100)/2)*0, Math.sin((Math.PI/100)/2)*0, Math.sin((Math.PI/100)/2)*1, Math.cos((Math.PI/100)/2))
