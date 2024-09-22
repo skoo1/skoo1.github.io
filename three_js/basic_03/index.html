@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js Box with dat.GUI</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
+    <script>
+        // Three.js 설정
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // 박스 생성
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+        camera.position.z = 5;
+
+        // dat.GUI 설정
+        const gui = new dat.GUI();
+        const params = {
+            width: 1,
+            height: 1,
+            depth: 1,
+            color: 0x00ff00
+        };
+
+        gui.add(params, 'width', 0.1, 3).onChange(updateBox);
+        gui.add(params, 'height', 0.1, 3).onChange(updateBox);
+        gui.add(params, 'depth', 0.1, 3).onChange(updateBox);
+        gui.addColor(params, 'color').onChange(updateColor);
+
+        function updateBox() {
+            cube.scale.set(params.width, params.height, params.depth);
+        }
+
+        function updateColor() {
+            cube.material.color.setHex(params.color);
+        }
+
+        // 애니메이션 루프
+        function animate() {
+            requestAnimationFrame(animate);
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
